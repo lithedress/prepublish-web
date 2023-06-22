@@ -1,0 +1,9 @@
+/dist/
+/target/
+
+/.idea/
+/.vscode/
+/.github/
+/LICENSE-APACHE
+/LICENSE-MIT
+/README.md
