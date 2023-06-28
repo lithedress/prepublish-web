@@ -98,12 +98,11 @@ pub(super) struct SignupProps {
 pub(super) fn Signup(props: &SignupProps) -> Html {
     let cfg = use_state(|| props.cfg.clone());
     let email = use_state(AttrValue::default);
-    let is_email = use_state(bool::default);
     let password = use_state(AttrValue::default);
     let password_again = use_state(AttrValue::default);
     let good_password = use_state(bool::default);
     let name = use_state(AttrValue::default);
-    let msg_box = use_state(|| html!());
+    let msg_box = use_state(Html::default);
     let onclick = {
         let email = email.clone();
         let password = password.clone();
@@ -122,10 +121,8 @@ pub(super) fn Signup(props: &SignupProps) -> Html {
     };
     let check_email = {
         let email = email.clone();
-        let is_email = is_email.clone();
         move |e: InputEvent| {
             if let Some(input) = e.target_dyn_into::<web_sys::HtmlInputElement>() {
-                is_email.set(email_address::EmailAddress::is_valid(&input.value()));
                 email.set(input.value().into());
             }
         }
@@ -173,8 +170,7 @@ pub(super) fn Signup(props: &SignupProps) -> Html {
             <p>
                 <label>
                     { "Email Address: " }
-                    <input type="text" oninput={check_email} value={(*email).clone()} />
-                    { if *is_email { " ✅" } else { " ❎" }}
+                    <input type="email" oninput={check_email} value={(*email).clone()} />
                 </label>
             </p>
 
@@ -201,10 +197,10 @@ pub(super) fn Signup(props: &SignupProps) -> Html {
             </p>
 
             <p>
-                <button {onclick} disabled={!(*is_email && *good_password)}>{"Sign up"}</button><br />
+                <button {onclick} disabled={!(*good_password)}>{"Sign up"}</button>
             </p>
 
-            { (*msg_box).clone() }<br />
+            { (*msg_box).clone() }
         </div>
     }
 }

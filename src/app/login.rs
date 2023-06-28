@@ -93,7 +93,7 @@ pub(super) fn Login(props: &LoginProps) -> Html {
             <p>
                 <label>
                     { "Email Address: " }
-                    <input type="text" value={(*email).clone()} />
+                    <input type="email" value={(*email).clone()} />
                 </label>
             </p>
 

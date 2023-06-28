@@ -6,6 +6,8 @@ use self::common::{AppConfig, Route};
 mod common;
 mod signup;
 mod login;
+mod profiles;
+mod theses;
 
 #[function_component]
 fn AppWithConfig(props: &AppConfig) -> Html {
@@ -22,6 +24,9 @@ fn AppWithConfig(props: &AppConfig) -> Html {
         Route::Login => html! {
             <login::Login cfg={(*cfg).clone()} />
         },
+        Route::ThesesRoot | Route::Theses => html! {
+            <Switch<theses::Route> render={theses::Route::switch((*cfg).clone())} />
+        }
     };
     html! {
         <BrowserRouter>

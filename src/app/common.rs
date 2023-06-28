@@ -1,4 +1,4 @@
-use serde::{Deserialize, Serialize};
+use serde::{Deserialize, Serialize, de::DeserializeOwned};
 use yew::{AttrValue, Properties};
 use std::rc::Rc;
 use yew_router::Routable;
@@ -12,6 +12,10 @@ pub(super) enum Route {
     Signup,
     #[at("/login")]
     Login,
+    #[at("/theses")]
+    ThesesRoot,
+    #[at("/theses/*")]
+    Theses,
 }
 
 #[derive(Serialize, Deserialize)]
@@ -44,4 +48,30 @@ pub(super) struct AuthBody {
     pub(super)email: AttrValue,
     #[serde_as(as = "DisplayFromStr")]
     pub(super)password: AttrValue,
+}
+
+#[derive(thiserror::Error, Debug)]
+pub(super) enum FetchError {
+    #[error(transparent)]
+    Parse(#[from] url::ParseError),
+    #[error(transparent)]
+    Response(#[from] gloo::net::Error)
+}
+
+impl FetchError {
+    pub(super) fn view(&self) -> yew::Html {
+        yew::html! {
+            <div>
+                <p>{ self.to_string() }</p>
+                <p>{ "Please report this error to our administrator!" }</p>
+            </div>
+        }
+    }
+}
+
+pub(super) enum FetchRes<T: DeserializeOwned> {
+    OK(T),
+    Other {
+        status: u16, msg: String
+    },
 }
