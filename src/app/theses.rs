@@ -3,7 +3,9 @@ use yew::prelude::*;
 use yew_router::prelude::*;
 
 
-use super::{common::AppConfig, profiles::PublicProfile};
+use crate::app::profiles::TinyProfile;
+
+use super::{common::{AppConfig, FetchRes}, profiles::PublicProfile};
 
 #[derive(Clone, Routable, PartialEq)]
 pub(super) enum Route {
@@ -24,11 +26,10 @@ struct PostProps {
 fn Post(props: &PostProps) -> Html {
     let cfg = use_state(|| props.cfg.clone());
     let title = use_state(AttrValue::default);
-    let authors = use_state(<Vec<PublicProfile>>::new);
+    let authors = use_state(<Vec<(PublicProfile, TinyProfile)>>::new);
     let abstraction = use_state(AttrValue::default);
     let keywords = use_state(<Vec<AttrValue>>::new);
     let msg_box = use_state(Html::default);
-
     let is_good_title = use_state(bool::default);
     let check_title = {
         let title = title.clone();
@@ -53,7 +54,7 @@ fn Post(props: &PostProps) -> Html {
         }
     };
 
-    let authors_ares = {
+    let authors_area = {
         let author = use_state(|| ObjectId::from_bytes([0_u8; 12]));
         let is_good_author = use_state(bool::default);
         let oninput = {
@@ -64,7 +65,7 @@ fn Post(props: &PostProps) -> Html {
                 if let Some(input) = e.target_dyn_into::<web_sys::HtmlInputElement>() {
                     match ObjectId::parse_str(input.value()) {
                         Ok(id) => {
-                            is_good_author.set(authors.iter().find(|p| p._id == id).is_none());
+                            is_good_author.set(authors.iter().find(|(p, _)| p._id == id).is_none());
                             author.set(id);
                         }
                         _ => {
@@ -80,19 +81,31 @@ fn Post(props: &PostProps) -> Html {
             let authors = authors.clone();
             let msg_box = msg_box.clone();
             move |_| {
-                let mut vals = (*authors).clone();
+                let cfg = cfg.clone();
+                let author = author.clone();
+                let authors = authors.clone();
+                let msg_box = msg_box.clone();
                 wasm_bindgen_futures::spawn_local(async move {
-                    match PublicProfile::get(*cfg, *author).await {
+                    match PublicProfile::get((*cfg).clone(), *author).await {
                         Ok(res) => match res {
-                            Res::Other(o) => {
-                                msg_box.set(o)
+                            FetchRes::OK(body) => {
+                                match ((*cfg).clone(), body.clone()).try_into() {
+                                    Ok(tiny_profile) => {
+                                        let mut vals = (*authors).clone();
+                                        vals.push((body, tiny_profile));
+                                        authors.set(vals);
+                                    }
+                                    Err(e) => { msg_box.set(e.view()); }
+                                }
+                            }
+                            FetchRes::Other(o) => {
+                                msg_box.set(o.view());
                             }
                         }
                         Err(e) => { msg_box.set(e.view()); }
                     }
                     
                 });
-                authors.set(vals);
             }
         };
         html! {
@@ -101,7 +114,7 @@ fn Post(props: &PostProps) -> Html {
                     <label>
                         { "Authors: " }
                         <ol>
-                            { for authors.iter().map(|author| html!(<li>{ author.view() }</li>)) }
+                            { for authors.iter().map(|author| html!(<li>{ author.1.view() }</li>)) }
                         </ol>
                     </label>
                     <input type="text" {oninput} value={(*author).clone().to_hex()} />
@@ -173,6 +186,10 @@ fn Post(props: &PostProps) -> Html {
             </p>
 
             <p>
+                { authors_area }
+            </p>
+
+            <p>
                 { keywords_area }
             </p>
 
@@ -185,7 +202,7 @@ impl Route {
     pub(super) fn switch(cfg: AppConfig) -> impl Fn(Self) -> Html {
         move |routes| match routes {
             Self::New => html! {
-                //<Post cfg={cfg.clone()} />
+                <Post cfg={cfg.clone()} />
             },
             _ => html!()
         }

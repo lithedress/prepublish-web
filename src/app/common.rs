@@ -61,7 +61,7 @@ pub(super) enum FetchError {
 impl FetchError {
     pub(super) fn view(&self) -> yew::Html {
         yew::html! {
-            <div>
+            <div color="red">
                 <p>{ self.to_string() }</p>
                 <p>{ "Please report this error to our administrator!" }</p>
             </div>
@@ -71,7 +71,22 @@ impl FetchError {
 
 pub(super) enum FetchRes<T: DeserializeOwned> {
     OK(T),
-    Other {
-        status: u16, msg: String
-    },
+    Other(FetchOther),
+}
+
+pub(super) struct FetchOther {
+    pub(super) status: u16,
+    pub(super)  msg: String,
+}
+
+impl FetchOther {
+    pub(super) fn view(self) -> yew::Html {
+        yew::html! {
+            <b>
+                <p>{ self.status.to_string() }</p>
+                <p>{ "Please report this error to our administrator!" }</p>
+                <p>{ self.msg }</p>
+            </b>
+        }
+    }
 }

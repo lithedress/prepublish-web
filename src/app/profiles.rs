@@ -27,11 +27,12 @@ impl PublicProfile {
         } else {  
             let status = res.status();
             let msg = res.text().await?;
-            Ok(common::FetchRes::Other { status, msg })
+            Ok(common::FetchRes::Other(common::FetchOther{ status, msg }))
         }
     }
 }
 
+#[derive(Clone)]
 pub(super) struct TinyProfile {
     pub(super) avatar: Option<Rc<url::Url>>,
     pub(super) name: AttrValue,
