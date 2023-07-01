@@ -1,13 +1,21 @@
+use yew::prelude::*;
+use yew_router::prelude::*;
 use yew::{AttrValue, use_state, UseStateHandle};
 use yew::virtual_dom::VNode;
 use web_sys::InputEvent;
 
-pub fn get_keywords_area(keywords: UseStateHandle<Vec<AttrValue>>) -> VNode {
+#[derive(PartialEq, Properties)]
+pub struct KeywordsProps {
+    keywords: Vec<AttrValue>,
+}
+
+#[function_component]
+pub fn Keywords(props: &KeywordsProps) -> Html {
     let keyword = use_state(AttrValue::default);
 
     let is_good_keyword = use_state(bool::default);
     let oninput = {
-        let keywords = keywords.clone();
+        let keywords = props.keywords.clone();
         let keyword = keyword.clone();
         let is_good_keyword = is_good_keyword.clone();
         move |e: InputEvent| {
@@ -19,7 +27,7 @@ pub fn get_keywords_area(keywords: UseStateHandle<Vec<AttrValue>>) -> VNode {
         }
     };
     let onclick = {
-        let keywords = keywords.clone();
+        let keywords = props.keywords.clone();
         let keyword = keyword.clone();
         move |_| {
             let mut vals = (*keywords).clone();
