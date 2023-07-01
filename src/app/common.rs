@@ -80,12 +80,12 @@ pub(super) struct FetchOther {
 }
 
 impl FetchOther {
-    pub(super) fn view(self) -> yew::Html {
+    pub(super) fn view(&self) -> yew::Html {
         yew::html! {
             <b>
-                <p>{ self.status.to_string() }</p>
+                <p>{ self.status }</p>
                 <p>{ "Please report this error to our administrator!" }</p>
-                <p>{ self.msg }</p>
+                <p>{ &self.msg }</p>
             </b>
         }
     }

@@ -8,6 +8,7 @@ mod signup;
 mod login;
 mod profiles;
 mod theses;
+mod versions;
 
 #[function_component]
 fn AppWithConfig(props: &AppConfig) -> Html {

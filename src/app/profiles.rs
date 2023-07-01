@@ -30,6 +30,28 @@ impl PublicProfile {
             Ok(common::FetchRes::Other(common::FetchOther{ status, msg }))
         }
     }
+
+    pub(super) fn try_view(&self, cfg: AppConfig) -> Result<yew::Html, common::FetchError> {
+        let src = match self.avatar_id {
+            Some(avatar_id) => yew::AttrValue::from(cfg.api_addr.join(&avatar_id.to_hex())?.to_string()),
+            None => "default.jpg".into(),
+        };
+        Ok(yew::html! {
+            <div>
+                <p>
+                    <img {src} />
+                    { &self.name }
+                </p>
+                <p>
+                    { &self.email }
+                </p>
+                <p>
+                    { "Join in " }
+                    { self.joining_at }
+                </p>
+            </div>
+        })
+    }
 }
 
 #[derive(Clone)]
