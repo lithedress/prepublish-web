@@ -1,34 +1,34 @@
-use yew::{AttrValue, Callback, Component, Context, Html, Properties};
+use yew::{AttrValue, Callback, Component, Context, Html, html, html_nested, Properties, TargetCast};
 use bson::oid::ObjectId;
 use web_sys::{HtmlInputElement, InputEvent};
 use std::str::FromStr;
 
 #[derive(Default)]
-struct Input {
+pub(super) struct Input {
     id: Option<ObjectId>,
     hex: AttrValue,
 }
 
-enum InputMsg {
+pub(super) enum InputMsg {
     Input(String),
     Submit,
 }
 
 #[derive(PartialEq, Properties)]
-struct InputProps {
-    is_valid: Callback<ObjectId, bool>,
-    submit: Callback<ObjectId>,
+pub(super) struct InputProps {
+    pub(super) is_valid: Callback<ObjectId, bool>,
+    pub(super) submit: Callback<ObjectId>,
 }
 
 impl Component for Input {
     type Message = InputMsg;
     type Properties = InputProps;
 
-    fn create(ctx: &Context<Self>) -> Self {
+    fn create(_ctx: &Context<Self>) -> Self {
         Self::default()
     }
 
-    fn update(&mut self, ctx: &Context<Self>, msg: Self::Message) -> bool {
+    fn update(&mut self, _ctx: &Context<Self>, msg: Self::Message) -> bool {
         match msg {
             InputMsg::Input(val) => {
                 self.id = match ObjectId::from_str(&val) {

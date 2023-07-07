@@ -21,8 +21,8 @@ pub(super) enum Route {
 #[derive(Serialize, Deserialize)]
 #[derive(PartialEq, Properties)]
 #[derive(Clone)]
-pub(super) struct AppConfig {
-    pub(super) api_addr: Rc<url::Url>,
+pub struct AppConfig {
+    pub api_addr: Rc<url::Url>,
 }
 
 impl AppConfig {

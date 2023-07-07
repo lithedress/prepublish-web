@@ -1,9 +1,19 @@
-use yew::{AttrValue, Component, Context, Html};
+use yew::{AttrValue, Callback, Component, Context, Html, html, Properties, TargetCast};
 use web_sys::{HtmlInputElement, InputEvent};
-use crate::views::theses::post::keywords::{InputMsg, InputProps};
+
+pub(super) enum InputMsg {
+    Input(String),
+    Submit,
+}
+
+#[derive(PartialEq, Properties)]
+pub(super) struct InputProps {
+    pub(super) is_valid: Callback<AttrValue, bool>,
+    pub(super) submit: Callback<AttrValue>,
+}
 
 #[derive(Default)]
-struct Input {
+pub(super) struct Input {
     val: AttrValue,
 }
 
@@ -42,3 +52,4 @@ impl Component for Input {
         }
     }
 }
+

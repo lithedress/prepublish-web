@@ -25,7 +25,7 @@ impl Component for AlertBox {
         true
     }
 
-    fn view(&self, ctx: &Context<Self>) -> Html {
+    fn view(&self, _ctx: &Context<Self>) -> Html {
         if let Some(ref res) = self.content {
             html! {
                 <b>

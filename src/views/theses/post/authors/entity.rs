@@ -1,8 +1,7 @@
-use yew::{Callback, Html};
-use crate::models::common::AppConfig;
-use crate::models::profile::PublicProfile;
+use yew::{Callback, Html, html};
+use crate::models::{common::AppConfig, profile::PublicProfile};
 
-fn view_entity(val: &PublicProfile, index: usize, delete: &Callback<usize>, cfg: &AppConfig) -> Html {
+pub(super) fn view_entity(val: &PublicProfile, index: usize, delete: &Callback<usize>, cfg: &AppConfig) -> Html {
     let onclick = {
         let delete = delete.clone();
         move |_| delete.emit(index)

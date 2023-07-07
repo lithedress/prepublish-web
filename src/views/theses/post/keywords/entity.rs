@@ -1,6 +1,6 @@
-use yew::{AttrValue, Callback, Html};
+use yew::{AttrValue, Callback, Html, html};
 
-fn view_entity(val: &AttrValue, index: usize, delete: &Callback<usize>) -> Html {
+pub(super) fn view_entity(val: &AttrValue, index: usize, delete: &Callback<usize>) -> Html {
     let onclick = {
         let delete = delete.clone();
         move |_| delete.emit(index)
