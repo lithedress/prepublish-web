@@ -15,10 +15,10 @@ impl PublicProfile {
     pub async fn try_get(
         cfg: &super::common::AppConfig,
         id: bson::oid::ObjectId,
-    ) -> super::common::FetchResult<super::common::FetchRes<Self>> {
+    ) -> super::common::AppResult<super::common::FetchRes<Self>> {
         <super::common::FetchRes<Self>>::try_from_gloo_res(
             gloo::net::http::Request::get(
-                cfg.api_addr.join("profiles")?.join(&id.to_hex())?.as_str(),
+                cfg.api.join(&format!("profiles/{}", id.to_hex()))?.as_str(),
             )
             .send()
             .await,

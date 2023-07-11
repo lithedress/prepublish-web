@@ -9,7 +9,7 @@ pub(super) fn view_entity(val: &PublicProfile, index: usize, delete: &Callback<u
     html! {
         <div>
             { val.clone().view_tiny(cfg) }
-            <button {onclick} >{ " ❎" }</button>
+            <label {onclick} >{ "❎" }</label>
         </div>
     }
 }

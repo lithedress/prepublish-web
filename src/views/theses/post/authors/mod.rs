@@ -5,7 +5,7 @@ use yew::{
 };
 
 use crate::models::{
-    common::{AppConfig, FetchError, FetchOther, FetchRes},
+    common::{AppConfig, AppError, FetchOther, FetchRes},
     profile::PublicProfile,
 };
 
@@ -18,7 +18,7 @@ pub(super) struct Authors {
 }
 
 pub(super) enum AuthorsMsg {
-    Err(FetchError),
+    Err(AppError),
     Alert(FetchOther),
     Push(Rc<PublicProfile>),
     Remove(usize),
@@ -28,7 +28,7 @@ pub(super) enum AuthorsMsg {
 #[derive(PartialEq, Properties)]
 pub(super) struct AuthorsProps {
     pub(super) cfg: Rc<AppConfig>,
-    pub(super) err: Callback<FetchError>,
+    pub(super) err: Callback<AppError>,
     pub(super) alert: Callback<FetchOther>,
     pub(super) vals: Callback<Rc<Vec<Rc<PublicProfile>>>>,
 }
@@ -71,7 +71,7 @@ impl Component for Authors {
 
     fn view(&self, ctx: &Context<Self>) -> Html {
         let delete = ctx.link().callback(AuthorsMsg::Remove);
-        let is_valid = Callback::from({
+        let validate = Callback::from({
             let vals = self.vals.clone();
             move |id| !(vals.iter().any(|v| v._id == id))
         });
@@ -94,16 +94,14 @@ impl Component for Authors {
         let reset = ctx.link().callback(|_| AuthorsMsg::New);
         html! {
             <div>
-                <p>
-                    <label>
-                        { "Key Words: " }
-                        <ol>
-                            { for self.vals.clone().iter().enumerate().map(|(index, val)| entity::view_entity(&val, index, &delete, &ctx.props().cfg)) }
-                        </ol>
-                    </label>
-                    <input::Input {is_valid}{submit} />
-                    <button onclick={reset}>{ "Reset Key Words "}</button>
-                </p>
+                <fieldset>
+                    <legend>{ "Authors" }</legend>
+                    <ol>
+                        { for self.vals.clone().iter().enumerate().map(|(index, val)| entity::view_entity(&val, index, &delete, &ctx.props().cfg)) }
+                    </ol>
+                    <input::Input {validate}{submit} />
+                    <button onclick={reset}>{ "Reset" }</button>
+                </fieldset>
             </div>
         }
     }

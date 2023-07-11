@@ -1,21 +1,33 @@
+use serde::Serialize;
+use serde_with::{serde_as, DisplayFromStr};
 use yew::prelude::*;
 use yew::{function_component, html, Properties};
-use yew_router::prelude::*;
-use crate::app::common::{AppConfig, AuthBody, Route};
+
+use crate::models::common::AppConfig;
+
+#[serde_as]
+#[derive(Serialize)]
+
+struct AuthBody {
+    #[serde_as(as = "DisplayFromStr")]
+    password: AttrValue,
+    #[serde_as(as = "DisplayFromStr")]
+    email: AttrValue,
+}
 
 async fn login_post(cfg: AppConfig, body: AuthBody) -> Html {
     let token = match cfg.get_token().await {
         Ok(token) => token,
-        Err(e) => return e,
+        Err(e) => return e.view(),
     };
-    let url = match cfg.api_addr.join("login") {
+    let url = match cfg.api.join("login") {
         Ok(url) => url,
         Err(e) => {
             return html! {
                 <div>
                     { e.to_string() }
                     { "Please report this error to our administrator!" }
-                    { cfg.api_addr.clone() }
+                    { cfg.api.clone() }
                 </div>
             }
         }
@@ -26,7 +38,8 @@ async fn login_post(cfg: AppConfig, body: AuthBody) -> Html {
     }
     let res = (async move {
         let res = gloo::net::http::Request::post(url.as_str())
-            .header("x-csrf-token", &token)
+            //.header("x-csrf-token", &token)
+            .credentials(web_sys::RequestCredentials::Include)
             .json(&body)?
             .send()
             .await?;
@@ -41,7 +54,7 @@ async fn login_post(cfg: AppConfig, body: AuthBody) -> Html {
     match res {
         Ok(ref res) => match res {
             Res::OK => html! {
-                <Redirect<Route> to={Route::Home}/>
+                <yew_router::prelude::Redirect<super::route::Route>  to={super::route::Route::Home}/>
             },
             Res::Other { status, msg } => match status {
                 500 => html! {
@@ -93,14 +106,28 @@ pub(crate) fn Login(props: &LoginProps) -> Html {
             <p>
                 <label>
                     { "Email Address: " }
-                    <input type="email" value={(*email).clone()} />
+                    <input type="email" value={(*email).clone()} oninput={
+                        let email = email.clone();
+                        move |e: InputEvent| {
+                            if let Some(input) = e.target_dyn_into::<web_sys::HtmlInputElement>() {
+                                email.set(input.value().into());
+                            }
+                        }
+                    } />
                 </label>
             </p>
 
             <p>
                 <label>
                     { "Password: " }
-                    <input type="password" value={(*password).clone()} />
+                    <input type="password" value={(*password).clone()} oninput={
+                        let password = password.clone();
+                        move |e: InputEvent| {
+                            if let Some(input) = e.target_dyn_into::<web_sys::HtmlInputElement>() {
+                                password.set(input.value().into());
+                            }
+                        }
+                    } />
                 </label>
             </p>
 

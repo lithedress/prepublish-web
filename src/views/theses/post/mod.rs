@@ -1,12 +1,12 @@
 use std::{ops::Not, rc::Rc};
 
-use web_sys::{HtmlInputElement, InputEvent};
+use web_sys::{HtmlInputElement, InputEvent, HtmlTextAreaElement, RequestCredentials};
 use yew::{html, html_nested, AttrValue, Component, Context, Html, Properties, TargetCast};
 use yew_router::scope_ext::RouterScopeExt;
 
 use crate::{
     models::{
-        common::{AppConfig, FetchError, FetchOther},
+        common::{AppConfig, AppError, FetchOther},
         profile::PublicProfile,
     },
     views::alerts::AlertBox,
@@ -17,7 +17,7 @@ mod keywords;
 
 #[derive(Default)]
 pub(super) struct Post {
-    err: Option<FetchError>,
+    err: Option<AppError>,
     alert: Option<Rc<FetchOther>>,
     title: AttrValue,
     title_ref: yew::NodeRef,
@@ -27,7 +27,7 @@ pub(super) struct Post {
 }
 
 pub(super) enum PostMsg {
-    Err(FetchError),
+    Err(AppError),
     Alert(FetchOther),
     InputTitle(String),
     InputAbstraction(String),
@@ -96,7 +96,7 @@ impl Component for Post {
                 .map(|i| PostMsg::InputTitle(i.value()))
         });
         let check_abstraction = ctx.link().batch_callback(|e: InputEvent| {
-            e.target_dyn_into::<HtmlInputElement>()
+            e.target_dyn_into::<HtmlTextAreaElement>()
                 .map(|i| PostMsg::InputAbstraction(i.value()))
         });
         let keywords = ctx.link().callback(PostMsg::UpdateKeywords);
@@ -119,11 +119,13 @@ impl Component for Post {
                         "title": title.as_str(),
                         "abstraction": abstraction.as_str(),
                         "keywords": keywords.iter().map(|k| k.as_str()).collect::<Vec<_>>(),
-                        "authors": authors.iter().map(|a| a._id).collect::<Vec<_>>()
+                        "author_ids": authors.iter().map(|a| a._id).collect::<Vec<_>>(),
+                        "languages": []
                     });
                     match async move {
                         Ok(
-                            gloo::net::http::Request::post(cfg.api_addr.join("theses")?.as_str())
+                            gloo::net::http::Request::post(cfg.api.join("theses")?.as_str())
+                            .credentials(RequestCredentials::Include)
                                 .json(&body)?
                                 .send()
                                 .await?
@@ -168,7 +170,7 @@ impl Component for Post {
                 </p>
 
                 <p>
-                    <button {onclick} />
+                    <button {onclick} >{ "submit" }</button>
                 </p>
 
                 { alert_box }

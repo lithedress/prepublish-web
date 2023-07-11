@@ -8,7 +8,7 @@ pub(super) enum InputMsg {
 
 #[derive(PartialEq, Properties)]
 pub(super) struct InputProps {
-    pub(super) is_valid: Callback<AttrValue, bool>,
+    pub(super) validate: Callback<AttrValue, bool>,
     pub(super) submit: Callback<AttrValue>,
 }
 
@@ -47,7 +47,7 @@ impl Component for Input {
         html! {
             <div>
                 <input type="text" {oninput} value={ self.val.clone() } />
-                <button {onclick} disabled={!ctx.props().is_valid.emit(self.val.clone())}>{"Add keyword"}</button>
+                <button {onclick} disabled={!ctx.props().validate.emit(self.val.clone())}>{"Add"}</button>
             </div>
         }
     }

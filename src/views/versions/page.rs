@@ -7,17 +7,16 @@ use yew::{
 };
 
 use crate::models::{
-    common::{AppConfig, FetchError},
+    common::{AppConfig, AppError},
     version::Version,
 };
 
 #[derive(Default)]
 pub struct Page {
-    err: Option<FetchError>,
+    err: Option<AppError>,
 }
 
 pub enum PageMsg {
-    Err(FetchError),
 }
 
 #[derive(PartialEq, Properties)]
@@ -42,21 +41,17 @@ impl Component for Page {
         let val = ctx.props().val.clone();
         let file = Rc::new(
             match cfg
-                .api_addr
-                .join("file/")
-                .map(|f| f.join(&val.file_id.to_hex()))
-                .flatten()
+                .api
+                .join(&format!("file/{}", val.file_id.to_hex()))
             {
                 Ok(file) => file,
-                Err(e) => return FetchError::from(e).into(),
+                Err(e) => return AppError::from(e).into(),
             },
         );
         let source = match val.source_id {
             Some(source) => match cfg
-                .api_addr
-                .join("file/")
-                .map(|f| f.join(&source.to_hex()))
-                .flatten()
+                .api
+                .join(&format!("file/{}", source.to_hex()))
             {
                 Ok(source) => Some(source),
                 Err(_) => None,
@@ -97,7 +92,7 @@ fn PDF(props: &PDFProps) -> HtmlResult {
     let cfg = props.cfg.clone();
     let file = props.file.to_owned();
     let res = use_future(move || async move {
-        let viewer = match cfg.api_addr.join("static/web/viewer.html") {
+        let viewer = match cfg.api.join("static/web/viewer.html") {
             Ok(viewer) => viewer,
             Err(_) => {
                 return None;

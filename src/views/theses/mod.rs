@@ -10,6 +10,14 @@ impl Route {
             Self::New => yew::html! {
                 <post::Post cfg={cfg.clone()} />
             },
+            Self::View { id } => {
+                let fallback = yew::html! {<div>{format!("Loading thesis {id}...")}</div>};
+                yew::html! {
+                    <yew::Suspense {fallback}>
+                        <get::Get cfg={cfg.clone()} {id} />
+                    </yew::Suspense>
+                    }
+                }
             _ => yew::html!()
         }
     }

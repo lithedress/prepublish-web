@@ -9,7 +9,7 @@ pub mod page;
 
 #[derive(PartialEq, Properties)]
 pub struct GetProps {
-    pub cfg: AppConfig,
+    pub cfg: Rc<AppConfig>,
     pub id: bson::oid::ObjectId,
 }
 

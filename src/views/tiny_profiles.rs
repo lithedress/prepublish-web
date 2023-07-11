@@ -8,22 +8,22 @@ use crate::{models::{profile::PublicProfile, common::{AppConfig, FetchRes}}, vie
 impl PublicProfile {
     pub fn view_tiny(&self, cfg: &AppConfig) -> Html {
         let src: AttrValue = match self.avatar_id {
-            Some(aid) => match cfg.api_addr.join(&aid.to_hex()) {
+            Some(aid) => match cfg.api.join(&format!("profiles/{}", aid.to_hex())) {
                 Ok(avatar) => avatar.to_string().into(),
-                Err(_) => "./default.jpg".into(),
+                Err(_) => "/default.jpg".into(),
             },
-            None => "./default.jpg".into(),
+            None => "/default.jpg".into(),
         };
         html! {
-            <div>
+            <>
                 <img {src} />
                 { self.name.clone() }
-            </div>
+            </>
         }
     }
 
-    pub fn tiny_from_id(id: ObjectId, cfg: AppConfig) -> Html {
-        let fallback = html! {<div>{"Loading..."}</div>};
+    pub fn tiny_from_id(id: ObjectId, cfg: Rc<AppConfig>) -> Html {
+        let fallback = html! {<div>{format!("Loading Tiny Profile {id}...")}</div>};
 
         html! {
             <Suspense {fallback}>
@@ -35,7 +35,7 @@ impl PublicProfile {
 
 #[derive(PartialEq, Properties)]
 struct TinyProfileProps {
-    cfg: AppConfig,
+    cfg: Rc<AppConfig>,
     id: ObjectId,
 }
 

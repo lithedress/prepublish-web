@@ -30,7 +30,6 @@ impl Component for AlertBox {
             html! {
                 <b>
                     <p>{ res.status }</p>
-                    <p>{ "Please report this error to our administrator!" }</p>
                     <p>{ &res.msg }</p>
                 </b>
             }

@@ -1,5 +1,5 @@
 #[derive(Clone, yew_router::Routable, PartialEq)]
-pub(super) enum Route {
+pub enum Route {
     #[at("/")]
     Home,
     #[at("/signup")]

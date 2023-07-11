@@ -1,23 +1,36 @@
 #[derive(thiserror::Error, Debug)]
-pub enum FetchError {
+pub enum AppError {
     #[error(transparent)]
     Parse(#[from] url::ParseError),
     #[error(transparent)]
-    Response(#[from] gloo::net::Error)
+    Response(#[from] gloo::net::Error),
+    #[error("{0}")]
+    Js(serde_json::Value),
+    #[error(transparent)]
+    Json(serde_json::Error),
 }
 
-pub type FetchResult<T> = Result<T, FetchError>;
+impl From<wasm_bindgen::JsValue> for AppError {
+    fn from(value: wasm_bindgen::JsValue) -> Self {
+        match gloo::utils::format::JsValueSerdeExt::into_serde::<serde_json::Value>(&value) {
+            Ok(json) => Self::Js(json),
+            Err(e) => Self::Json(e),
+        }
+    }
+}
+
+pub type AppResult<T> = Result<T, AppError>;
 
 #[derive(serde::Deserialize)]
 #[derive(PartialEq, yew::Properties)]
 #[derive(Clone)]
 pub struct AppConfig {
-    pub api_addr: std::rc::Rc<url::Url>,
+    pub api: std::rc::Rc<url::Url>,
 }
 
 impl AppConfig {
-    pub async fn get_token(&self) -> FetchResult<String> {
-        gloo::net::http::Request::get(self.api_addr.as_str())
+    pub async fn get_token(&self) -> AppResult<String> {
+        gloo::net::http::Request::get(self.api.as_str())
             .send()
             .await
             .map(|res| res.headers().get("x-csrf-token").unwrap_or_default()).map_err(Into::into)
@@ -37,7 +50,7 @@ pub enum FetchRes<T: serde::de::DeserializeOwned> {
 }
 
 impl<T: serde::de::DeserializeOwned> FetchRes<T> {
-    pub async fn try_from_gloo_res(res: Result<gloo::net::http::Response, gloo::net::Error>) -> FetchResult<Self> {
+    pub async fn try_from_gloo_res(res: Result<gloo::net::http::Response, gloo::net::Error>) -> AppResult<Self> {
         let res = res?;
         if res.ok() {
             let body = res.json().await;

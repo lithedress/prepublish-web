@@ -16,7 +16,7 @@ pub(super) enum InputMsg {
 
 #[derive(PartialEq, Properties)]
 pub(super) struct InputProps {
-    pub(super) is_valid: Callback<ObjectId, bool>,
+    pub(super) validate: Callback<ObjectId, bool>,
     pub(super) submit: Callback<ObjectId>,
 }
 
@@ -40,6 +40,7 @@ impl Component for Input {
             }
             InputMsg::Submit => {
                 self.hex = AttrValue::default();
+                self.id = None;
                 true
             }
         }
@@ -57,9 +58,9 @@ impl Component for Input {
                         InputMsg::Submit
                     }
                 });
-                html_nested!(<button {onclick} disabled={!ctx.props().is_valid.emit(id)}>{"Add keyword"}</button>)
+                html_nested!(<button {onclick} disabled={false && !ctx.props().validate.emit(id)}>{"Add"}</button>)
             }
-            None => html_nested!(<button disabled={ true }>{"Add keyword"}</button>)
+            None => html_nested!(<button disabled={ true }>{"Add"}</button>)
         };
         html! {
             <div>

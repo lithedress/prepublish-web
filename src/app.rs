@@ -1,35 +1,14 @@
 use yew::{prelude::*, suspense::use_future};
 use yew_router::prelude::*;
 
-use self::common::{AppConfig, Route};
-
-mod common;
-mod profiles;
-mod theses;
-mod versions;
+use crate::{models::common::AppConfig, views::Route};
 
 #[function_component]
 fn AppWithConfig(props: &AppConfig) -> Html {
     let cfg = use_state(|| props.clone());
-    let switch = move |routes| match routes {
-        Route::Home => html! {
-            <div>
-                { "WIP" }
-            </div>
-        },
-        Route::Signup => html! {
-            <signup::Signup cfg={(*cfg).clone()} />
-        },
-        Route::Login => html! {
-            <login::Login cfg={(*cfg).clone()} />
-        },
-        Route::ThesesRoot | Route::Theses => html! {
-            <Switch<theses::Route> render={theses::Route::switch((*cfg).clone())} />
-        }
-    };
     html! {
         <BrowserRouter>
-            <Switch<Route> render={switch} />
+            <Switch<Route> render={Route::switch(std::rc::Rc::from((*cfg).to_owned()))} />
         </BrowserRouter>
     }
 }

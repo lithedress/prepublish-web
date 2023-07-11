@@ -47,7 +47,7 @@ impl Component for Keywords {
 
     fn view(&self, ctx: &Context<Self>) -> Html {
         let delete = ctx.link().callback(KeywordsMsg::Remove);
-        let is_valid = Callback::from({
+        let validate = Callback::from({
             let vals = self.vals.clone();
             move |val: AttrValue| {
                 !(val.is_empty() || vals.contains(&val))
@@ -57,16 +57,14 @@ impl Component for Keywords {
         let reset = ctx.link().callback(|_| KeywordsMsg::New);
         html! {
             <div>
-                <p>
-                    <label>
-                        { "Key Words: " }
-                        <ol>
-                            { for self.vals.clone().iter().enumerate().map(|(index, val)| entity::view_entity(val, index, &delete)) }
-                        </ol>
-                    </label>
-                    <input::Input {is_valid}{submit} />
-                    <button onclick={ reset }>{ "Reset Key Words "}</button>
-                </p>
+                <fieldset>
+                    <legend>{ "Key Words" }</legend>
+                    <ol>
+                        { for self.vals.clone().iter().enumerate().map(|(index, val)| entity::view_entity(val, index, &delete)) }
+                    </ol>
+                    <input::Input {validate}{submit} />
+                    <button onclick={ reset }>{ "Reset"}</button>
+                </fieldset>
             </div>
         }
     }

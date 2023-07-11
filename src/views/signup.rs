@@ -1,9 +1,10 @@
-use crate::app::common::{AppConfig, Route};
 use serde::Serialize;
 use serde_with::{serde_as, DisplayFromStr};
 use yew::prelude::*;
 use yew::{function_component, use_state, AttrValue, Html, Properties};
 use yew_router::prelude::*;
+
+use crate::models::common::AppConfig;
 
 #[serde_as]
 #[derive(Serialize)]
@@ -18,7 +19,7 @@ struct SignupBody {
 
 
 async fn signup_post(cfg: AppConfig, body: SignupBody) -> Html {
-    let token = gloo::net::http::Request::get(cfg.api_addr.as_str())
+    let token = gloo::net::http::Request::get(cfg.api.as_str())
         .send()
         .await
         .map(|res| res.headers().get("x-csrf-token"));
@@ -29,19 +30,19 @@ async fn signup_post(cfg: AppConfig, body: SignupBody) -> Html {
                 <div>
                     { e.to_string() }
                     { "Please report this error to our administrator!" }
-                    { cfg.api_addr.clone() }
+                    { cfg.api.clone() }
                 </div>
             }
         }
     };
-    let url = match cfg.api_addr.join("signup") {
+    let url = match cfg.api.join("signup") {
         Ok(url) => url,
         Err(e) => {
             return html! {
                 <div>
                     { e.to_string() }
                     { "Please report this error to our administrator!" }
-                    { cfg.api_addr.clone() }
+                    { cfg.api.clone() }
                 </div>
             }
         }
@@ -67,7 +68,7 @@ async fn signup_post(cfg: AppConfig, body: SignupBody) -> Html {
     match res {
         Ok(ref res) => match res {
             Res::OK => html! {
-                <Redirect<Route> to={Route::Login}/>
+                <Redirect<super::route::Route> to={super::route::Route::Login}/>
             },
             Res::Other { status, msg } => match status {
                 500 => html! {
