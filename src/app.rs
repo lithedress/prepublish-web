@@ -4,8 +4,6 @@ use yew_router::prelude::*;
 use self::common::{AppConfig, Route};
 
 mod common;
-mod signup;
-mod login;
 mod profiles;
 mod theses;
 mod versions;

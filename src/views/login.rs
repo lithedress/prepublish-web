@@ -64,12 +64,12 @@ async fn login_post(cfg: AppConfig, body: AuthBody) -> Html {
 }
 
 #[derive(PartialEq, Properties)]
-pub(super) struct LoginProps {
-    pub(super) cfg: AppConfig,
+pub(crate) struct LoginProps {
+    pub(crate) cfg: AppConfig,
 }
 
 #[function_component]
-pub(super) fn Login(props: &LoginProps) -> Html {
+pub(crate) fn Login(props: &LoginProps) -> Html {
     let cfg = use_state(|| props.cfg.clone());
     let email = use_state(AttrValue::default);
     let password = use_state(AttrValue::default);

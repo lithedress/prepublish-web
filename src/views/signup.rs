@@ -90,12 +90,12 @@ async fn signup_post(cfg: AppConfig, body: SignupBody) -> Html {
 }
 
 #[derive(PartialEq, Properties)]
-pub(super) struct SignupProps {
-    pub(super) cfg: AppConfig,
+pub(crate) struct SignupProps {
+    pub(crate) cfg: AppConfig,
 }
 
 #[function_component]
-pub(super) fn Signup(props: &SignupProps) -> Html {
+pub(crate) fn Signup(props: &SignupProps) -> Html {
     let cfg = use_state(|| props.cfg.clone());
     let email = use_state(AttrValue::default);
     let password = use_state(AttrValue::default);
