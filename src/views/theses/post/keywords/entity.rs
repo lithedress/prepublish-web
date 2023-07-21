@@ -6,9 +6,9 @@ pub(super) fn view_entity(val: &AttrValue, index: usize, delete: &Callback<usize
         move |_| delete.emit(index)
     };
     html! {
-        <div>
+        <li>
             { val.clone() }
             <label {onclick} >{ "❎" }</label>
-        </div>
+        </li>
     }
 }

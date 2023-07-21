@@ -18,7 +18,7 @@ struct SignupBody {
 }
 
 
-async fn signup_post(cfg: AppConfig, body: SignupBody) -> Html {
+async fn signup_post(cfg: &AppConfig, body: SignupBody) -> Html {
     let token = gloo::net::http::Request::get(cfg.api.as_str())
         .send()
         .await
@@ -92,7 +92,7 @@ async fn signup_post(cfg: AppConfig, body: SignupBody) -> Html {
 
 #[derive(PartialEq, Properties)]
 pub(crate) struct SignupProps {
-    pub(crate) cfg: AppConfig,
+    pub(crate) cfg: std::rc::Rc<AppConfig>,
 }
 
 #[function_component]
@@ -117,7 +117,7 @@ pub(crate) fn Signup(props: &SignupProps) -> Html {
                 email: (*email).clone(),
                 name: (*name).clone(),
             };
-            wasm_bindgen_futures::spawn_local(async move { msg_box.set(signup_post(cfg, body).await) })
+            wasm_bindgen_futures::spawn_local(async move { msg_box.set(signup_post(&cfg, body).await) })
         }
     };
     let check_email = {

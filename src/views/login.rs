@@ -15,7 +15,7 @@ struct AuthBody {
     email: AttrValue,
 }
 
-async fn login_post(cfg: AppConfig, body: AuthBody) -> Html {
+async fn login_post(cfg: &AppConfig, body: AuthBody) -> Html {
     let token = match cfg.get_token().await {
         Ok(token) => token,
         Err(e) => return e.view(),
@@ -78,7 +78,7 @@ async fn login_post(cfg: AppConfig, body: AuthBody) -> Html {
 
 #[derive(PartialEq, Properties)]
 pub(crate) struct LoginProps {
-    pub(crate) cfg: AppConfig,
+    pub(crate) cfg: std::rc::Rc<AppConfig>,
 }
 
 #[function_component]
@@ -98,7 +98,7 @@ pub(crate) fn Login(props: &LoginProps) -> Html {
                 password: (*password).clone(),
                 email: (*email).clone(),
             };
-            wasm_bindgen_futures::spawn_local(async move { msg_box.set(login_post(cfg, body).await) })
+            wasm_bindgen_futures::spawn_local(async move { msg_box.set(login_post(&cfg, body).await) })
         }
     };
     html! {

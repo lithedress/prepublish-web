@@ -45,7 +45,7 @@ pub struct FetchOther {
 }
 
 pub enum FetchRes<T: serde::de::DeserializeOwned> {
-    Body(std::rc::Rc<T>),
+    Body(T),
     Other(FetchOther),
 }
 

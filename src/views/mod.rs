@@ -8,6 +8,7 @@ mod theses;
 mod tiny_profiles;
 mod signup;
 mod login;
+mod profile_list;
 
 pub(crate) use route::Route;
 
@@ -23,13 +24,13 @@ impl Route {
                 </div>
             },
             Self::Signup => html! {
-                <signup::Signup cfg={(*cfg).clone()} />
+                <signup::Signup cfg={ cfg.clone() } />
             },
             Self::Login => html! {
-                <login::Login cfg={(*cfg).clone()} />
+                <login::Login cfg={ cfg.clone() } />
             },
             Self::Versions { id } => html! {
-                <versions::Get cfg={(*cfg).clone()} {id} />
+                <versions::Get cfg={ cfg.clone() } {id} />
             },
         }
     }

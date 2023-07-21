@@ -9,10 +9,9 @@ use crate::{
         common::{AppConfig, AppError, FetchOther},
         profile::PublicProfile,
     },
-    views::alerts::AlertBox,
+    views::{alerts::AlertBox, profile_list::ProfileList},
 };
 
-mod authors;
 mod keywords;
 
 #[derive(Default)]
@@ -51,8 +50,8 @@ impl Component for Post {
 
     fn update(&mut self, ctx: &Context<Self>, msg: Self::Message) -> bool {
         match msg {
-            PostMsg::Err(err) => {
-                self.err = Some(err);
+            PostMsg::Err(e) => {
+                self.err = Some(e);
                 true
             }
             PostMsg::Alert(other) => {
@@ -120,7 +119,7 @@ impl Component for Post {
                         "abstraction": abstraction.as_str(),
                         "keywords": keywords.iter().map(|k| k.as_str()).collect::<Vec<_>>(),
                         "author_ids": authors.iter().map(|a| a._id).collect::<Vec<_>>(),
-                        "languages": []
+                        "languages": ["en"]
                     });
                     match async move {
                         Ok(
@@ -142,7 +141,7 @@ impl Component for Post {
             }
         });
 
-        let alert_box = html_nested!(<AlertBox refresh={ self.alert.clone() }/>);
+        let alert_box = html_nested!(<AlertBox refresh={ self.alert.clone() } />);
         html! {
             <div>
                 <p>
@@ -162,7 +161,7 @@ impl Component for Post {
                 </p>
 
                 <p>
-                    <authors::Authors cfg={ctx.props().cfg.clone()} {err} {alert} vals={authors} />
+                    <ProfileList cfg={ctx.props().cfg.clone()} {err} {alert} vals={authors} />
                 </p>
 
                 <p>

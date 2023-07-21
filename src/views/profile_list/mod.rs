@@ -13,7 +13,7 @@ mod entity;
 pub mod input;
 
 #[derive(Default)]
-pub(in crate::views) struct Authors {
+pub(in crate::views) struct ProfileList {
     vals: Rc<Vec<Rc<PublicProfile>>>,
 }
 
@@ -33,7 +33,7 @@ pub(in crate::views) struct AuthorsProps {
     pub(in crate::views) vals: Callback<Rc<Vec<Rc<PublicProfile>>>>,
 }
 
-impl Component for Authors {
+impl Component for ProfileList {
     type Message = AuthorsMsg;
     type Properties = AuthorsProps;
 

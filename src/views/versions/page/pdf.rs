@@ -1,16 +1,16 @@
-use yew::{function_component, HtmlResult, Properties};
+use yew::{function_component, html, HtmlResult, Properties, suspense::use_future};
 use std::rc::Rc;
 use gloo::net::http::Method;
 use crate::models::common::AppConfig;
 
 #[derive(PartialEq, Properties)]
-struct PDFProps {
-    cfg: Rc<AppConfig>,
-    file: Rc<url::Url>,
+pub struct PDFProps {
+    pub cfg: Rc<AppConfig>,
+    pub file: Rc<url::Url>,
 }
 
 #[function_component]
-fn PDF(props: &PDFProps) -> HtmlResult {
+pub fn PDF(props: &PDFProps) -> HtmlResult {
     let cfg = props.cfg.to_owned();
     let file = props.file.to_owned();
     let res = use_future({

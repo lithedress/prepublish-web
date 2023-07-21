@@ -28,10 +28,13 @@ impl Component for AlertBox {
     fn view(&self, _ctx: &Context<Self>) -> Html {
         if let Some(ref res) = self.content {
             html! {
-                <b>
+                <dialog open={ true }>
                     <p>{ res.status }</p>
                     <p>{ &res.msg }</p>
-                </b>
+                    <form method="dialog">
+                        <button>{ "OK" }</button>
+                    </form>
+                </dialog>
             }
         } else {
             Html::default()

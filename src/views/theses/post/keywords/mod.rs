@@ -59,9 +59,9 @@ impl Component for Keywords {
             <div>
                 <fieldset>
                     <legend>{ "Key Words" }</legend>
-                    <ol>
+                    <menu>
                         { for self.vals.clone().iter().enumerate().map(|(index, val)| entity::view_entity(val, index, &delete)) }
-                    </ol>
+                    </menu>
                     <input::Input {validate}{submit} />
                     <button onclick={ reset }>{ "Reset"}</button>
                 </fieldset>
