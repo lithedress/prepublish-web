@@ -4,20 +4,20 @@ use web_sys::{HtmlInputElement, InputEvent};
 use std::str::FromStr;
 
 #[derive(Default)]
-pub(super) struct Input {
+pub(in crate::views) struct Input {
     id: Option<ObjectId>,
     hex: AttrValue,
 }
 
-pub(super) enum InputMsg {
+pub(in crate::views) enum InputMsg {
     Input(String),
     Submit,
 }
 
 #[derive(PartialEq, Properties)]
-pub(super) struct InputProps {
-    pub(super) validate: Callback<ObjectId, bool>,
-    pub(super) submit: Callback<ObjectId>,
+pub(in crate::views) struct InputProps {
+    pub(in crate::views) validate: Callback<ObjectId, bool>,
+    pub(in crate::views) submit: Callback<ObjectId>,
 }
 
 impl Component for Input {
@@ -58,7 +58,7 @@ impl Component for Input {
                         InputMsg::Submit
                     }
                 });
-                html_nested!(<button {onclick} disabled={false && !ctx.props().validate.emit(id)}>{"Add"}</button>)
+                html_nested!(<button {onclick} disabled={!ctx.props().validate.emit(id)}>{"Add"}</button>)
             }
             None => html_nested!(<button disabled={ true }>{"Add"}</button>)
         };

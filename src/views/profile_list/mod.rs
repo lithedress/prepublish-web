@@ -10,14 +10,14 @@ use crate::models::{
 };
 
 mod entity;
-mod input;
+pub mod input;
 
 #[derive(Default)]
-pub(super) struct Authors {
+pub(in crate::views) struct Authors {
     vals: Rc<Vec<Rc<PublicProfile>>>,
 }
 
-pub(super) enum AuthorsMsg {
+pub(in crate::views) enum AuthorsMsg {
     Err(AppError),
     Alert(FetchOther),
     Push(Rc<PublicProfile>),
@@ -26,11 +26,11 @@ pub(super) enum AuthorsMsg {
 }
 
 #[derive(PartialEq, Properties)]
-pub(super) struct AuthorsProps {
-    pub(super) cfg: Rc<AppConfig>,
-    pub(super) err: Callback<AppError>,
-    pub(super) alert: Callback<FetchOther>,
-    pub(super) vals: Callback<Rc<Vec<Rc<PublicProfile>>>>,
+pub(in crate::views) struct AuthorsProps {
+    pub(in crate::views) cfg: Rc<AppConfig>,
+    pub(in crate::views) err: Callback<AppError>,
+    pub(in crate::views) alert: Callback<FetchOther>,
+    pub(in crate::views) vals: Callback<Rc<Vec<Rc<PublicProfile>>>>,
 }
 
 impl Component for Authors {
